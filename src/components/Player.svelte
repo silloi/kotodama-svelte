@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Knob from './Knob.svelte';
+
 	export let url = '';
 	export let text = '';
 	export let initPaused = false;
@@ -8,6 +10,8 @@
 	let paused = false;
 	let duration = 0;
 	let time = 0;
+
+	$: degree = duration ? Math.round(((time / duration) * 360) % 360) : 0;
 
 	const convertVttToBase64 = (vtt: string) => {
 		const base64 = btoa(unescape(encodeURIComponent(vtt)));
@@ -26,13 +30,19 @@
 </script>
 
 <article>
-	<button type="button" on:click={toggle}>{paused ? '▶︎' : '■'}</button>
+	<button
+		type="button"
+		on:click={toggle}
+		style="background-color: {paused ? '#ccc' : 'transparent'};"
+	>
+		<Knob {degree} />
+	</button>
 
 	<video
 		bind:this={player}
 		bind:paused
 		bind:duration
-		currentTime={time}
+		bind:currentTime={time}
 		width="1000"
 		height="60"
 		autoplay={!initPaused}
@@ -45,6 +55,13 @@
 </article>
 
 <style>
+	button {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		cursor: pointer;
+	}
+
 	article {
 		display: flex;
 		align-items: center;
